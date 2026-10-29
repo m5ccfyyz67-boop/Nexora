@@ -34,10 +34,10 @@
 - L’historique et le profil lisent les données du compte authentifié et affichent un état vide lorsqu’aucune course n’existe.
 - Le portefeuille et les forfaits ne montrent aucun solde fictif et restent inactifs tant que le modèle kilométrique, le prix, la validité, le paiement et les règles de débit/transfert n’ont pas été approuvés.
 
-## 5. Aperçu, documentation et demande de fusion — aperçu validé; PR #1 ouverte
+## 5. Aperçu, documentation et intégration GitHub — PR #1 vers main
 
 - L’aperçu Manus reste séparé du dépôt GitHub; seules les sources nécessaires sont copiées dans le projet d’aperçu et son `.git` géré n’est pas remplacé.
 - `public/manus-routes.json` déclare exactement la route de page implémentée (`/`); l’aperçu répond HTTP 200 pour la page et le manifeste JSON.
-- `README.md` documente les prérequis, l’installation reproductible, les variables, le backend, les migrations, les commandes de vérification et les limites.
-- `pnpm test` (4 tests), `pnpm typecheck` et `pnpm build` passent dans le dépôt source et la copie d’aperçu; les tests ciblent les états actifs/terminaux, leurs libellés et l’annulation pré-attribution.
-- La PR [#1](https://github.com/m5ccfyyz67-boop/Nexora/pull/1) est ouverte vers `main`; le commit final de `feat/passenger-foundation` contient la correction de l’état actif et ce suivi. Aucune fusion ni publication de l’application n’est effectuée.
+- `README.md`, `plan.md` et `docs/RAPPORT_LIVRAISON_NEXORA_MOBILITY.md` documentent l’installation, l’architecture, les migrations, les validations, les limites et les décisions restantes.
+- `pnpm test` (4 tests), `pnpm typecheck` et `pnpm build` passent dans le dépôt source et la copie d’aperçu.
+- La PR [#1](https://github.com/m5ccfyyz67-boop/Nexora/pull/1) est le mécanisme d’intégration de la branche `feat/passenger-foundation` vers `main`. La fusion du code ne publie ni ne déploie l’application.
