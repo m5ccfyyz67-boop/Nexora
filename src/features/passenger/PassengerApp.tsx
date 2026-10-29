@@ -78,10 +78,9 @@ export default function PassengerApp({ client, user, onSignOut }: PassengerAppPr
     return () => { mounted = false; };
   }, [client, screen, selectedRideId, historyRefresh]);
 
-  const activeRide = useMemo(
-    () => rides.find((ride) => ride.id === selectedRideId) ?? rides.find((ride) => isRideActive(ride.status)),
-    [rides, selectedRideId],
-  );
+  const selectedRide = useMemo(() => rides.find((ride) => ride.id === selectedRideId), [rides, selectedRideId]);
+  const activeRide = useMemo(() => rides.find((ride) => isRideActive(ride.status)), [rides]);
+  const trackingRide = selectedRide ?? activeRide;
   const firstName = profileName.trim().split(/\s+/)[0] || user.email?.split('@')[0] || 'Passager';
 
   function open(next: Screen) {
@@ -220,23 +219,23 @@ export default function PassengerApp({ client, user, onSignOut }: PassengerAppPr
           {screen === 'tracking' && (
             <section className="screen-stack narrow-screen">
               <ScreenHeading eyebrow="SUIVI DE COURSE" title="État de la demande" onBack={() => open('home')} />
-              {activeRide?.status === 'cancelled' ? (
+              {loadingRides ? <LoadingState label="Chargement de la demande…" /> : trackingRide?.status === 'cancelled' ? (
                 <EmptyState icon={<X size={22} />} title="Demande annulée" detail="La demande non attribuée a été annulée. Vous pouvez réserver un nouveau trajet." action="Réserver à nouveau" onAction={startAnotherRide} />
-              ) : activeRide ? (
+              ) : trackingRide ? (
                 <>
                   <div className="tracking-map map-placeholder"><div className="map-grid" /><div className="tracking-status-icon"><Clock3 size={22} /></div><span className="map-label">Suivi GPS non activé</span></div>
                   <div className="surface-card tracking-card">
-                    <span className="status-pill status-gold">{rideStatusLabels[activeRide.status]}</span>
-                    <h2>{activeRide.pickup_label}</h2><div className="route-divider" /><h2>{activeRide.dropoff_label}</h2>
-                    <div className="tracking-meta"><span>{categories.find((item) => item.id === activeRide.category)?.label}</span><span>{formatDate(activeRide.requested_at)}</span></div>
+                    <span className="status-pill status-gold">{rideStatusLabels[trackingRide.status]}</span>
+                    <h2>{trackingRide.pickup_label}</h2><div className="route-divider" /><h2>{trackingRide.dropoff_label}</h2>
+                    <div className="tracking-meta"><span>{categories.find((item) => item.id === trackingRide.category)?.label}</span><span>{formatDate(trackingRide.requested_at)}</span></div>
                   </div>
                   <InlineNotice>La demande est bien enregistrée. La mise en relation avec un chauffeur n’est pas activée dans ce premier lot.</InlineNotice>
                   {ridesError && <p className="form-message error-message" role="alert">{ridesError}</p>}
                   {cancellationError && <p className="form-message error-message" role="alert">{cancellationError}</p>}
                   <div className="tracking-actions">
                     <button className="button button-quiet" type="button" onClick={() => setHistoryRefresh((value) => value + 1)}><RefreshCw size={15} /> Actualiser l’état</button>
-                    {isRideCancellable(activeRide.status, Boolean(activeRide.driver_user_id)) && (
-                      <button className="button button-danger" type="button" disabled={cancellingRide} onClick={() => void handleCancelRide(activeRide)}>
+                    {isRideCancellable(trackingRide.status, Boolean(trackingRide.driver_user_id)) && (
+                      <button className="button button-danger" type="button" disabled={cancellingRide || loadingRides} onClick={() => void handleCancelRide(trackingRide)}>
                         {cancellingRide ? 'Annulation…' : 'Annuler la demande'}
                       </button>
                     )}
